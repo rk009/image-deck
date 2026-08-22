@@ -1,0 +1,9 @@
+{
+  "id": "image-deck",
+  "name": "Image Deck",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Turn image-deck code blocks into an interactive image gallery.",
+  "author": "rk009",
+  "isDesktopOnly": false
+}
