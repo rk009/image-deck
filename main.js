@@ -209,10 +209,21 @@ class ImageDeckSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Image Deck" });
-    new Setting(containerEl).setName("Default gallery height").setDesc("Height in pixels (e.g. 480). CSS units such as 480px or 60vh are also supported.").addText(text => text
-      .setValue(this.plugin.settings.height).onChange(async value => {
-        this.plugin.settings.height = safeHeight(value, DEFAULT_SETTINGS.height); await this.plugin.saveSettings();
-      }));
+    new Setting(containerEl).setName("Default gallery height").setDesc("Height in pixels.").addText(text => {
+      text.inputEl.type = "number";
+      text.inputEl.min = "0";
+      text.inputEl.step = "any";
+      const height = Number(String(this.plugin.settings.height).replace(/px$/i, ""));
+      text.setValue(String(Number.isFinite(height) && height >= 0 ? height : 480))
+        .onChange(async value => {
+          if (!value.trim()) return;
+          const height = Number(value);
+          if (!Number.isFinite(height) || height < 0) return;
+          this.plugin.settings.height = String(height);
+          await this.plugin.saveSettings();
+        });
+      text.inputEl.insertAdjacentText("afterend", " px");
+    });
     new Setting(containerEl).setName("Image fit").addDropdown(dropdown => dropdown
       .addOption("contain", "Contain").addOption("cover", "Cover").setValue(this.plugin.settings.fit)
       .onChange(async value => { this.plugin.settings.fit = value; await this.plugin.saveSettings(); }));
