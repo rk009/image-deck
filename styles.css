@@ -64,6 +64,7 @@
 }
 
 .image-deck-caption.is-empty { visibility: hidden; }
+.image-deck-caption.is-hidden { display: none; }
 
 .image-deck-thumbnails {
   display: flex;

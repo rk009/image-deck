@@ -19,7 +19,8 @@ function parseBoolean(value, fallback) {
 }
 
 function safeHeight(value, fallback) {
-  const text = String(value || "").trim();
+  const text = String(value ?? "").trim();
+  if (/^\d+(?:\.\d+)?$/.test(text)) return `${text}px`;
   return /^(auto|\d+(?:\.\d+)?(?:px|vh|vw|rem|em|%))$/i.test(text) ? text : fallback;
 }
 
@@ -181,7 +182,8 @@ class ImageDeckView extends MarkdownRenderChild {
     }
     this.missingEl.setText(item.src ? "" : `Image not found: ${item.target}`);
     this.captionEl.setText(this.options.captions ? (item.caption || "") : "");
-    this.captionEl.toggleClass("is-empty", !this.options.captions || !item.caption);
+    this.captionEl.toggleClass("is-hidden", !this.options.captions);
+    this.captionEl.toggleClass("is-empty", this.options.captions && !item.caption);
     this.thumbnailButtons.forEach((button, i) => {
       button.toggleClass("is-selected", i === index);
       button.setAttr("aria-selected", String(i === index));
@@ -207,7 +209,7 @@ class ImageDeckSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Image Deck" });
-    new Setting(containerEl).setName("Default gallery height").setDesc("CSS height such as 480px or 60vh.").addText(text => text
+    new Setting(containerEl).setName("Default gallery height").setDesc("Height in pixels (e.g. 480). CSS units such as 480px or 60vh are also supported.").addText(text => text
       .setValue(this.plugin.settings.height).onChange(async value => {
         this.plugin.settings.height = safeHeight(value, DEFAULT_SETTINGS.height); await this.plugin.saveSettings();
       }));
